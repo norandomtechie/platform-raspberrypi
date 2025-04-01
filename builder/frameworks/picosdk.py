@@ -12,7 +12,7 @@ FRAMEWORK_DIR = platform.get_package_dir("framework-picosdk")
 assert isdir(FRAMEWORK_DIR)
 
 # hardcoded for now
-rp2_variant_dir = join(FRAMEWORK_DIR, "src", "rp2040")
+rp2_variant_dir = join(FRAMEWORK_DIR, "src", "rp2350")
 # todo: try to better guess the board header name based from the board definition name
 # instead of requiring them to explicitly include it
 rp2_board_header = board.get("build.picosdk.board_header", "pico.h")
@@ -32,8 +32,6 @@ def gen_config_autogen(target_base_dir, board_hdr):
         env.Exit(-1)
     autogen_content_paths = [
         join(FRAMEWORK_DIR, "src", "boards", "include", "boards", board_hdr),
-        # only for ARM based RP2040
-        join(FRAMEWORK_DIR, "src" , "rp2_common", "cmsis", "include", "cmsis", "rename_exceptions.h")
     ]
     # read content
     autogen_content = ""
@@ -49,17 +47,20 @@ def gen_config_autogen(target_base_dir, board_hdr):
 genned_dir = join(env.subst("$PROJECT_BUILD_DIR"), env.subst("$PIOENV"), "generated")
 gen_config_autogen(genned_dir, rp2_board_header)
 
+print("board", board.get('build.mcu'))
+
 env.Append(
     #ASFLAGS=[f for f in ccflags if isinstance(f, str) and f.startswith("-m")],
     #ASPPFLAGS=["-x", "assembler-with-cpp"],
     #CFLAGS=sorted(list(cflags - ccflags)),
     #CCFLAGS=sorted(list(ccflags)),
     CPPDEFINES=[
-        ("PICO_RP2040", 1),
-        ("PICO_RP2350", 0),
+        # BUG: defining RP2040 in any way will force compilation for 2040 only.
+        # FIX: add RP2040 only if board requested was 2040
+        ("PICO_RP2350" if board.get('build.mcu') == "rp2350" else "PICO_RP2040", 1),
         ("PICO_RISCV", 0),
         ("PICO_ARM", 1),
-        ("PICO_CMSIS_DEVICE", "\"RP2040\""),
+        ("PICO_CMSIS_DEVICE", "\"RP2350\""),
         ("PICO_DEFAULT_FLASH_SIZE_BYTES", 2 * 1024 * 1024),
         # default SDK defines for on-hardware build
         ("PICO_ON_DEVICE", "1"),
@@ -150,7 +151,7 @@ env.Append(
         # CMSIS only for ARM
         join(FRAMEWORK_DIR, "src", "rp2_common", "cmsis", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "cmsis", "stub", "CMSIS", "Core", "Include"),
-        join(FRAMEWORK_DIR, "src", "rp2_common", "cmsis", "stub", "CMSIS", "Device", "RP2040", "Include"),
+        join(FRAMEWORK_DIR, "src", "rp2_common", "cmsis", "stub", "CMSIS", "Device", "RP2350", "Include"),
 
         join(FRAMEWORK_DIR, "src", "rp2_common", "tinyusb", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "pico_stdio_usb", "include"),
@@ -177,7 +178,7 @@ env.Append(
         join(FRAMEWORK_DIR, "src", "rp2_common", "pico_stdio", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "pico_stdlib", "include"),
 
-        join(FRAMEWORK_DIR, "src", "rp2040", "boot_stage2", "asminclude"),
+        join(FRAMEWORK_DIR, "src", "rp2350", "boot_stage2", "asminclude"),
     ],
     #CXXFLAGS=sorted(list(cxxflags - ccflags)),
     LIBPATH=[
@@ -266,7 +267,7 @@ configure_printf_impl()
 flash_region = "FLASH(rx) : ORIGIN = 0x10000000, LENGTH = %s\n" % str(board.get("upload.maximum_size"))
 Path(join(genned_dir, "pico_flash_region.ld")).write_text(flash_region)
 
-env.Replace(LDSCRIPT_PATH=join(FRAMEWORK_DIR, "src", "rp2_common", "pico_crt0", "rp2040", "memmap_default.ld"))
+env.Replace(LDSCRIPT_PATH=join(FRAMEWORK_DIR, "src", "rp2_common", "pico_crt0", "rp2350", "memmap_default.ld"))
 
 # build base files
 # system_RP2040.c
@@ -277,7 +278,7 @@ env.Replace(LDSCRIPT_PATH=join(FRAMEWORK_DIR, "src", "rp2_common", "pico_crt0", 
 
 gen_boot2_cmd = env.Command(
     join("$BUILD_DIR", "boot2.S"),  # $TARGET
-    join(FRAMEWORK_DIR, "src", "rp2040", "boot_stage2", "compile_time_choice.S"),  # $SOURCE
+    join(FRAMEWORK_DIR, "src", "rp2350", "boot_stage2", "compile_time_choice.S"),  # $SOURCE
     env.VerboseAction(" ".join([
         "$CC",
         "$ASPPFLAGS",
@@ -286,8 +287,8 @@ gen_boot2_cmd = env.Command(
     ] 
     + ["-D%s=%s" % (flag[0], str(flag[1])) for flag in env["CPPDEFINES"]] 
     + [
-        "-I\"%s\"" % join(FRAMEWORK_DIR, "src", "rp2040", "boot_stage2", "asminclude"),
-        "-I\"%s\"" % join(FRAMEWORK_DIR, "src", "rp2040", "boot_stage2", "include"),
+        "-I\"%s\"" % join(FRAMEWORK_DIR, "src", "rp2350", "boot_stage2", "asminclude"),
+        "-I\"%s\"" % join(FRAMEWORK_DIR, "src", "rp2350", "boot_stage2", "include"),
         "-I\"%s\"" % join(FRAMEWORK_DIR, "src", "common", "pico_base_headers", "include"),
         "-I\"%s\"" % join(FRAMEWORK_DIR, "generated"),
         "-I", "$PROJECT_BUILD_DIR/$PIOENV/generated",
@@ -301,7 +302,7 @@ gen_boot2_cmd = env.Command(
         "-nostdlib",
         "--specs=nosys.specs",
         "-nostartfiles",
-        "-Wl,-T,\"%s\"" % join(FRAMEWORK_DIR, "src", "rp2040", "boot_stage2", "boot_stage2.ld"),
+        "-Wl,-T,\"%s\"" % join(FRAMEWORK_DIR, "src", "rp2350", "boot_stage2", "boot_stage2.ld"),
         "$SOURCE"
     ] + [ " && "] + [
         "$OBJCOPY",
@@ -310,7 +311,7 @@ gen_boot2_cmd = env.Command(
         join("$BUILD_DIR", "boot2.bin")
     ] + [ " && "] + [
         "$PYTHONEXE",
-        join(FRAMEWORK_DIR, "src", "rp2040", "boot_stage2", "pad_checksum"),
+        join(FRAMEWORK_DIR, "src", "rp2350", "boot_stage2", "pad_checksum"),
         "-s 0xffffffff",
         join("$BUILD_DIR", "boot2.bin"),
         join("$BUILD_DIR", "boot2.S"),
@@ -335,6 +336,8 @@ default_common_rp2_components = [
     ("hardware_sync_spin_lock", "+<*>"),
     ("pico_platform_panic", "+<*>"),
     ("pico_runtime", "+<*>"),
+    ("pico_bootrom", "+<*>"),
+    ("pico_stdio", "+<*>"),
 ]
 
 for component, src_filter in default_common_rp2_components:
