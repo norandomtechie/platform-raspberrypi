@@ -66,7 +66,7 @@ env.Append(
         ("PICO_ON_DEVICE", "1"),
         ("PICO_NO_HARDWARE", "0"),
         ("PICO_BUILD", "1"),
-        ("LIB_CMSIS_CORE", 1)
+        ("LIB_CMSIS_CORE", 1),
     ],
     CPPPATH=[
         # for version.h, one-time generated
@@ -206,6 +206,8 @@ if not "PICO_DEFAULT_BOOT_STAGE2" in cpp_defines:
     pass
 if not "PIO_NO_STDIO_UART" in cpp_defines:
     flags.append(("PICO_STDIO_UART", 1))
+    # SDK C code specifies it as LIB_... so do that too
+    flags.append(("LIB_PICO_STDIO_UART", 1))
 if not "PIO_NO_MULTICORE" in cpp_defines:
     flags.append(("PICO_MULTICORE_ENABLED", 1))
 # check selected double implementation
@@ -232,9 +234,9 @@ if not "PIO_USE_DEFAULT_PAGE_SIZE" in cpp_defines:
     env.Append(LINKFLAGS=["-Wl,-z,max-page-size=4096"])
 
 timeout = 0
-if "PIO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS" in cpp_defines:
-    timeout = cpp_defines["PIO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS"]
-flags.append(("PICO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS", timeout))
+# if "PIO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS" in cpp_defines:
+#     timeout = cpp_defines["PIO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS"]
+# flags.append(("PICO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS", timeout))
 
 def build_double_library():
     pass
@@ -328,6 +330,7 @@ default_common_rp2_components = [
     ("hardware_xosc", "+<*>"),
     ("hardware_pll", "+<*>"),
     ("hardware_ticks", "+<*>"),
+    ("hardware_uart", "+<*>"),
     ("pico_clib_interface", "-<*> +<newlib_interface.c>"),
     ("hardware_gpio", "+<*>"),
     ("hardware_timer", "+<*>"),
@@ -338,6 +341,7 @@ default_common_rp2_components = [
     ("pico_runtime", "+<*>"),
     ("pico_bootrom", "+<*>"),
     ("pico_stdio", "+<*>"),
+    ("pico_stdio_uart", "+<*>"),
 ]
 
 for component, src_filter in default_common_rp2_components:
