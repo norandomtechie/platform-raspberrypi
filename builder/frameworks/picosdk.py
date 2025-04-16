@@ -206,8 +206,10 @@ if not "PICO_DEFAULT_BOOT_STAGE2_FILE" in cpp_defines:
 if not "PICO_DEFAULT_BOOT_STAGE2" in cpp_defines:
     pass
 if not "PIO_NO_STDIO_UART" in cpp_defines:
+    flags.append(("PICO_STDIO", 1))
     flags.append(("PICO_STDIO_UART", 1))
     # SDK C code specifies it as LIB_... so do that too
+    flags.append(("LIB_PICO_STDIO", 1))
     flags.append(("LIB_PICO_STDIO_UART", 1))
 if not "PIO_NO_MULTICORE" in cpp_defines:
     flags.append(("PICO_MULTICORE_ENABLED", 1))
