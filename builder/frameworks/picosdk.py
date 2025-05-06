@@ -423,6 +423,7 @@ default_common_rp2_components = [
     ("pico_stdio_uart", "+<*>"),
     ("pico_rand", "+<*>"),
     ("pico_unique_id", "+<*>"),
+    ("pico_multicore", "+<*>"),
 ]
 
 for component, src_filter in default_common_rp2_components:
