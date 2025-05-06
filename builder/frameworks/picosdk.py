@@ -421,6 +421,8 @@ default_common_rp2_components = [
     ("pico_bootrom", "+<*>"),
     ("pico_stdio", "+<*>"),
     ("pico_stdio_uart", "+<*>"),
+    ("pico_rand", "+<*>"),
+    ("pico_unique_id", "+<*>"),
 ]
 
 for component, src_filter in default_common_rp2_components:
