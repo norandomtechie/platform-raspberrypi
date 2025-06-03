@@ -105,6 +105,7 @@ env.Append(
         join(rp2_variant_dir, "boot_stage2", "include"),
 
         # common for rp2040, rp2350
+        join(FRAMEWORK_DIR, "src", "rp2_common", "boot_bootrom_headers", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_adc", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_adc"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_base", "include"),
