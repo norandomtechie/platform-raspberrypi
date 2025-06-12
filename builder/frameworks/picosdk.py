@@ -309,6 +309,8 @@ if "PIO_DEFAULT_PRINTF_IMPL" in cpp_defines:
     float_impl = cpp_defines["PIO_DEFAULT_FLOAT_IMPL"]
 if not "PIO_NO_BINARY_INFO" in cpp_defines:
     flags.append(("PICO_BINARY_INFO_ENABLED", 1))
+if not "PIO_USE_GPIO_COPROCESSOR" in cpp_defines:
+    flags.append(("PICO_USE_GPIO_COPROCESSOR", 0))
 
 if not "PIO_USE_DEFAULT_PAGE_SIZE" in cpp_defines:
     env.Append(LINKFLAGS=["-Wl,-z,max-page-size=4096"])
