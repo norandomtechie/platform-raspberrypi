@@ -315,6 +315,11 @@ if not "PIO_USE_GPIO_COPROCESSOR" in cpp_defines:
 if not "PIO_USE_DEFAULT_PAGE_SIZE" in cpp_defines:
     env.Append(LINKFLAGS=["-Wl,-z,max-page-size=4096"])
 
+env.Append(LINKFLAGS=[
+    "-u_printf_float", # force printf to use float
+    "-u_printf_double", # force printf to use double
+])
+
 timeout = 0
 if "PIO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS" in cpp_defines:
     timeout = cpp_defines["PIO_STDIO_USB_CONNECT_WAIT_TIMEOUT_MS"]
