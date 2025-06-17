@@ -2,6 +2,7 @@ from os.path import isdir, join
 from os import makedirs
 from pathlib import Path
 import sys
+import glob
 from SCons.Script import DefaultEnvironment
 
 env = DefaultEnvironment()
@@ -407,6 +408,31 @@ gen_boot2_cmd = env.Command(
     ]), "Generating boot2 $BUILD_DIR/boot2.S")
 )
 env.Depends("$BUILD_DIR/${PROGNAME}.elf", gen_boot2_cmd)
+
+############################################################
+# compile any .pio files to .pio.h
+
+PIO_FILES = glob.glob(join(env["PROJECT_SRC_DIR"], '*.pio'), recursive=True)
+if PIO_FILES:
+    try:
+        PIOASM_DIR = platform.get_package_dir("tool-pioasm-rp2040-earlephilhower")
+    except:
+        print("Could not find pioasm")
+        sys.exit(1)
+    if PIOASM_DIR is not None:
+        PIOASM_EXE = join(PIOASM_DIR, "pioasm")
+        for pio_file in PIO_FILES:
+            pio_file = Path(pio_file)
+            pio_h_file = pio_file.with_suffix('.pio.h')
+            if not pio_h_file.exists() or pio_file.stat().st_mtime > pio_h_file.stat().st_mtime:
+                env.Execute(
+                    env.VerboseAction(
+                        "%s -o c-sdk %s %s" % (PIOASM_EXE, pio_file, pio_h_file),
+                        "Compiling PIO file: %s" % pio_file.name
+                    )
+                )
+
+############################################################
 
 # default compontents
 default_common_rp2_components = [

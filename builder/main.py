@@ -312,7 +312,6 @@ env.Append(
         BinToSignedBin=Builder(
             action=env.VerboseAction(" ".join([
                 '"$PYTHONEXE" "%s"' % join(
-                    platform.get_package_dir("framework-arduinopico") or "",
                     "tools", "signing.py"),
                 "--mode",
                 "sign",
@@ -349,20 +348,6 @@ env.Append(
     )
 )
 
-is_arduino_pico_build = env.BoardConfig().get("build.core", "arduino") == "earlephilhower" and "arduino" in env.get("PIOFRAMEWORK")
-if is_arduino_pico_build:
-    pubkey = join(env.subst("$PROJECT_SRC_DIR"), "public.key")
-    if isfile(pubkey):
-        header_file =  join(env.subst("$BUILD_DIR"), "core", "Updater_Signing.h")
-        env.Prepend(CCFLAGS=['-I"%s"' % join("$BUILD_DIR", "core")])
-        env.Execute(" ".join([
-                '"$PYTHONEXE" "%s"' % join(
-                    platform.get_package_dir("framework-arduinopico"), "tools", "signing.py"),
-                "--mode", "header",
-                "--publickey", '"%s"' % join("$PROJECT_SRC_DIR", "public.key"),
-                "--out", '"%s"' % join("$BUILD_DIR", "core", "Updater_Signing.h")
-        ]))
-
 #
 # Target: Build executable and linkable firmware
 #
@@ -381,9 +366,8 @@ else:
         AlwaysBuild(target_firm)
     else:
         target_firm = env.ElfToBin(join("$BUILD_DIR", "${PROGNAME}"), target_elf)
-        signing_script_exists = exists(join(platform.get_package_dir("framework-arduinopico") or "",
-            "tools", "signing.py"))
-        if is_arduino_pico_build and signing_script_exists:
+        signing_script_exists = exists(join("tools", "signing.py"))
+        if signing_script_exists:
             target_signed_bin = env.BinToSignedBin(join("$BUILD_DIR", "${PROGNAME}"), target_firm)
             env.Depends(target_signed_bin, "checkprogsize")
         env.Depends(target_firm, "checkprogsize")
@@ -539,7 +523,6 @@ elif upload_protocol == "espota":
             "espressif8266.html#over-the-air-ota-update\n")
     env.Replace(
         UPLOADER=join(
-            platform.get_package_dir("framework-arduinopico") or "",
             "tools", "espota.py"),
         UPLOADERFLAGS=["--debug", "--progress", "-i", "$UPLOAD_PORT", "-p", "2040"],
         UPLOADCMD='"$PYTHONEXE" "$UPLOADER" $UPLOADERFLAGS -f $SOURCE'
