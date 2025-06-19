@@ -450,6 +450,7 @@ default_common_rp2_components = [
     ("hardware_irq", "+<*>"),
     ("hardware_sync", "+<*>"),
     ("hardware_sync_spin_lock", "+<*>"),
+    ("hardware_pio", "+<*>"),
     ("pico_platform_panic", "+<*>"),
     ("pico_runtime", "+<*>"),
     ("pico_bootrom", "+<*>"),
