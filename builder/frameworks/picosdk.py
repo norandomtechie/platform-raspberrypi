@@ -443,6 +443,7 @@ default_common_rp2_components = [
     ("hardware_adc", "+<*>"),
     ("hardware_boot_lock", "+<*>"),
     ("hardware_clocks", "+<*>"),
+    ("hardware_dma", "+<*>"),
     ("hardware_xosc", "+<*>"),
     ("hardware_pll", "+<*>"),
     ("hardware_ticks", "+<*>"),
