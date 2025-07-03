@@ -1,6 +1,7 @@
 from os.path import isdir, join
 from os import makedirs
 from pathlib import Path
+import platform as py_platform
 import sys
 import glob
 from SCons.Script import DefaultEnvironment
@@ -425,7 +426,15 @@ if PIO_FILES:
         traceback.print_exc()
         sys.exit(1)
     if PIOASM_DIR is not None:
-        PIOASM_EXE = join(PIOASM_DIR, "pioasm")
+        system = py_platform.system()
+        if system == "Windows":
+            PIOASM_EXE = join(PIOASM_DIR, "pioasm.exe")
+        elif system == "Darwin":
+            PIOASM_EXE = join(PIOASM_DIR, "macos-pioasm")
+        elif system == "Linux":
+            PIOASM_EXE = join(PIOASM_DIR, "pioasm.appimage")
+        else:
+            raise RuntimeError(f"Unsupported OS for pioasm: {system}")
         for pio_file in PIO_FILES:
             pio_file = Path(pio_file)
             pio_h_file = pio_file.with_suffix('.pio.h')
