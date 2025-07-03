@@ -418,9 +418,11 @@ env.Depends("$BUILD_DIR/${PROGNAME}.elf", gen_boot2_cmd)
 PIO_FILES = glob.glob(join(env["PROJECT_SRC_DIR"], '*.pio'), recursive=True)
 if PIO_FILES:
     try:
-        PIOASM_DIR = platform.get_package_dir("tool-pioasm-rp2040-earlephilhower")
-    except:
+        PIOASM_DIR = platform.get_package_dir("tool-pioasm-norandomtechie")
+    except Exception as e:
         print("Could not find pioasm")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
     if PIOASM_DIR is not None:
         PIOASM_EXE = join(PIOASM_DIR, "pioasm")
@@ -434,6 +436,8 @@ if PIO_FILES:
                         "Compiling PIO file: %s" % pio_file.name
                     )
                 )
+    else:
+        print("pioasm not found, skipping PIO files compilation.")
 
 ############################################################
 
