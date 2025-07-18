@@ -1,6 +1,7 @@
 from os.path import isdir, join
 from os import makedirs
 from pathlib import Path
+import platform as py_platform
 import sys
 import glob
 from SCons.Script import DefaultEnvironment
@@ -418,12 +419,22 @@ env.Depends("$BUILD_DIR/${PROGNAME}.elf", gen_boot2_cmd)
 PIO_FILES = glob.glob(join(env["PROJECT_SRC_DIR"], '*.pio'), recursive=True)
 if PIO_FILES:
     try:
-        PIOASM_DIR = platform.get_package_dir("tool-pioasm-rp2040-earlephilhower")
-    except:
+        PIOASM_DIR = platform.get_package_dir("tool-pioasm-norandomtechie")
+    except Exception as e:
         print("Could not find pioasm")
+        import traceback
+        traceback.print_exc()
         sys.exit(1)
     if PIOASM_DIR is not None:
-        PIOASM_EXE = join(PIOASM_DIR, "pioasm")
+        system = py_platform.system()
+        if system == "Windows":
+            PIOASM_EXE = join(PIOASM_DIR, "pioasm.exe")
+        elif system == "Darwin":
+            PIOASM_EXE = join(PIOASM_DIR, "macos-pioasm")
+        elif system == "Linux":
+            PIOASM_EXE = join(PIOASM_DIR, "pioasm.appimage")
+        else:
+            raise RuntimeError(f"Unsupported OS for pioasm: {system}")
         for pio_file in PIO_FILES:
             pio_file = Path(pio_file)
             pio_h_file = pio_file.with_suffix('.pio.h')
@@ -434,6 +445,8 @@ if PIO_FILES:
                         "Compiling PIO file: %s" % pio_file.name
                     )
                 )
+    else:
+        print("pioasm not found, skipping PIO files compilation.")
 
 ############################################################
 
