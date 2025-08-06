@@ -196,6 +196,8 @@ env.Append(
         join(FRAMEWORK_DIR, "src", "rp2_common", "pico_platform_compiler", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "pico_platform_panic"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "pico_platform_panic", "include"),
+        join(FRAMEWORK_DIR, "src", "rp2_common", "pico_platform_common"),
+        join(FRAMEWORK_DIR, "src", "rp2_common", "pico_platform_common", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "pico_platform_sections", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "pico_printf"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "pico_printf", "include"),
