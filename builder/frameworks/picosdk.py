@@ -392,6 +392,7 @@ gen_boot2_cmd = env.Command(
         "-I", "$PROJECT_BUILD_DIR/$PIOENV/generated",
         "-I\"%s\"" % join(rp2_variant_dir, "pico_platform", "include"),
         "-I\"%s\"" % join(FRAMEWORK_DIR, "src", "rp2_common", "pico_platform_compiler", "include"),
+        "-I\"%s\"" % join(FRAMEWORK_DIR, "src", "rp2_common", "pico_platform_common", "include"),
         "-I\"%s\"" % join(rp2_variant_dir, "hardware_regs", "include"),
         "-I\"%s\"" % join(FRAMEWORK_DIR, "src", "rp2_common", "pico_platform_sections", "include"),
         "-I\"%s\"" % join(FRAMEWORK_DIR, "src", "rp2_common", "pico_platform_panic", "include"),
