@@ -139,6 +139,8 @@ env.Append(
         join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_powman", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_resets", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_pwm", "include"),
+        join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_rcp"),
+        join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_rcp", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_rtc"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_rtc", "include"),
         join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_sha256"),
