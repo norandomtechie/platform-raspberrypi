@@ -513,11 +513,14 @@ default_common_rp2_components = [
     ("pico_bootrom", "+<*>"),
     ("pico_stdio", "+<*>"),
     ("pico_stdio_uart", "+<*>"),
-    ("pico_stdio_usb", "+<*>"),
     ("pico_rand", "+<*>"),
     ("pico_unique_id", "+<*>"),
     ("pico_multicore", "+<*>"),
 ]
+
+if "PIO_NO_STDIO_UART" in cpp_defines:
+    default_common_rp2_components.remove(("pico_stdio_uart", "+<*>"))
+    default_common_rp2_components.append(("pico_stdio_usb", "+<*>"))
 
 for component, src_filter in default_common_rp2_components:
     env.BuildSources(
