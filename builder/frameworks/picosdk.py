@@ -279,6 +279,31 @@ env.Append(
     #LIBS=["mbed"]
 )
 
+def build_tinyusb():
+    # setup build to include TinyUSB component
+    env.Append(
+        CPPPATH=[
+            join(FRAMEWORK_DIR, "lib", "tinyusb", "src"),
+            join(FRAMEWORK_DIR, "src", "rp2_common", "pico_fix", "rp2040_usb_device_enumeration", "include"),
+        ],
+        CPPDEFINES=[
+            ("CFG_TUSB_DEBUG", 0),
+            ("CFG_TUSB_MCU", "OPT_MCU_RP2040"),
+            ("CFG_TUSB_OS", "OPT_OS_PICO"),
+            ("PICO_RP2040_USB_DEVICE_UFRAME_FIX", 1),
+            ("PICO_RP2040_USB_DEVICE_ENUMERATION_FIX", 1),
+        ]
+    )
+    env.BuildSources(
+        join("$BUILD_DIR", "PicoSDKTinyUSB"),
+        join(FRAMEWORK_DIR, join(FRAMEWORK_DIR, "lib", "tinyusb", "src")),
+        "+<*> -<portable> +<portable/raspberrypi>"
+    )
+    env.BuildSources(
+        join("$BUILD_DIR", "PicoSDKPicoFix"),
+        join(FRAMEWORK_DIR, "src", "rp2_common", "pico_fix")
+    )
+
 cpp_defines = env.Flatten(env.get("CPPDEFINES", []))
 
 flags = []
@@ -294,6 +319,13 @@ if not "PIO_NO_STDIO_UART" in cpp_defines:
     # SDK C code specifies it as LIB_... so do that too
     flags.append(("LIB_PICO_STDIO", 1))
     flags.append(("LIB_PICO_STDIO_UART", 1))
+else:
+    flags.append(("PICO_STDIO", 1))
+    flags.append(("PICO_STDIO_USB", 1))
+    flags.append(("LIB_PICO_STDIO", 1))
+    flags.append(("LIB_PICO_STDIO_USB", 1))
+    cpp_defines.append("PIO_STDIO_USB")
+    build_tinyusb()
 if not "PIO_NO_MULTICORE" in cpp_defines:
     flags.append(("PICO_MULTICORE_ENABLED", 1))
 # check selected double implementation
@@ -475,11 +507,13 @@ default_common_rp2_components = [
     ("hardware_sync", "+<*>"),
     ("hardware_sync_spin_lock", "+<*>"),
     ("hardware_pio", "+<*>"),
+    ("hardware_watchdog", "+<*>"),
     ("pico_platform_panic", "+<*>"),
     ("pico_runtime", "+<*>"),
     ("pico_bootrom", "+<*>"),
     ("pico_stdio", "+<*>"),
     ("pico_stdio_uart", "+<*>"),
+    ("pico_stdio_usb", "+<*>"),
     ("pico_rand", "+<*>"),
     ("pico_unique_id", "+<*>"),
     ("pico_multicore", "+<*>"),
