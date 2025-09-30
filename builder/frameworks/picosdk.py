@@ -518,6 +518,33 @@ default_common_rp2_components = [
     ("pico_multicore", "+<*>"),
 ]
 
+# if more components are specified under "custom_pico_components"
+# in platformio.ini, add them to default
+import json
+data = json.loads(env.GetProjectConfig().to_json())[0]
+custom_components = [k for k in data[1] if k[0] == "custom_sdk_components"]
+if len(custom_components) == 0:
+    custom_components = []
+else:
+    custom_components = custom_components[0][1]
+if isinstance(custom_components, str):
+    if "\n" in custom_components:
+        # split by new lines
+        custom_components = custom_components.split("\n")
+    elif "," in custom_components:
+        custom_components = [comp.strip() for comp in custom_components.split(",") if comp.strip() != ""]
+    elif " " in custom_components:
+        custom_components = [comp.strip() for comp in custom_components.split(" ") if comp.strip() != ""]
+    else:
+        custom_components = [custom_components.strip()]
+if len(custom_components) > 0:
+    print("Adding Custom Pico SDK Components:")
+    for comp in custom_components:
+        if comp.strip() == "":
+            continue
+        print(" - %s" % comp)
+        default_common_rp2_components.append((comp, "+<*>"))
+
 if "PIO_NO_STDIO_UART" in cpp_defines:
     default_common_rp2_components.remove(("pico_stdio_uart", "+<*>"))
     default_common_rp2_components.append(("pico_stdio_usb", "+<*>"))
