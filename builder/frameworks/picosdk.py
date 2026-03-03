@@ -550,6 +550,10 @@ if "PIO_NO_STDIO_UART" in cpp_defines:
     default_common_rp2_components.append(("pico_stdio_usb", "+<*>"))
 
 for component, src_filter in default_common_rp2_components:
+    if component == "hardware_exception":
+        # then compile only C files
+        # TODO: when adding riscv support, include that file
+        src_filter = "+<*.c>"
     env.BuildSources(
         join("$BUILD_DIR", "PicoSDK%s" % component),
         join(FRAMEWORK_DIR, "src", "rp2_common", component),
