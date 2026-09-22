@@ -27,7 +27,11 @@ class RaspberrypiPlatform(PlatformBase):
         # Windows
         "windows_amd64": "https://github.com/maxgerhardt/toolchain-riscv-rp2350/releases/download/15.1.0/pio-riscv-toolchain-15-x64-win.zip",
         #"windows_x86": ""
-        # No Windows x86, ARM64 or ARM32 builds.
+        # No native Windows ARM64 build; alias to the x64 build, which runs
+        # fine under Windows 11 ARM's x64 emulation (same approach used for
+        # the ARM toolchain/OpenOCD/picotool packages).
+        "windows_arm64": "https://github.com/maxgerhardt/toolchain-riscv-rp2350/releases/download/15.1.0/pio-riscv-toolchain-15-x64-win.zip",
+        # No Windows x86 or ARM32 builds.
         # Linux
         "linux_x86_64": "https://github.com/maxgerhardt/toolchain-riscv-rp2350/releases/download/15.1.0/toolchain-riscv-rp2350-linux_x86_64-1.150100.250822.tar.gz",
         #"linux_i686": "",
@@ -43,7 +47,10 @@ class RaspberrypiPlatform(PlatformBase):
         # Windows
         "windows_amd64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-w64-mingw32.arm-none-eabi-78c24be.260719.zip",
         "windows_x86": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/i686-w64-mingw32.arm-none-eabi-78c24be.260719.zip",
-        # No Windows ARM64 or ARM32 builds.
+        # No native Windows ARM64 build; alias to the x64 build (runs under
+        # Windows 11 ARM's x64 emulation).
+        "windows_arm64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-w64-mingw32.arm-none-eabi-78c24be.260719.zip",
+        # No Windows ARM32 build.
         # Linux
         "linux_x86_64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-linux-gnu.arm-none-eabi-78c24be.260719.tar.gz",
         "linux_i686": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/i686-linux-gnu.arm-none-eabi-78c24be.260719.tar.gz",
@@ -59,7 +66,10 @@ class RaspberrypiPlatform(PlatformBase):
         # Windows
         "windows_amd64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-w64-mingw32.riscv32-unknown-elf-78c24be.260719.zip",
         "windows_x86": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/i686-w64-mingw32.riscv32-unknown-elf-78c24be.260719.zip",
-        # No Windows ARM64 or ARM32 builds.
+        # No native Windows ARM64 build; alias to the x64 build (runs under
+        # Windows 11 ARM's x64 emulation).
+        "windows_arm64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-w64-mingw32.riscv32-unknown-elf-78c24be.260719.zip",
+        # No Windows ARM32 build.
         # Linux
         "linux_x86_64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-linux-gnu.riscv32-unknown-elf-78c24be.260719.tar.gz",
         "linux_i686": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/i686-linux-gnu.riscv32-unknown-elf-78c24be.260719.tar.gz",
@@ -75,7 +85,10 @@ class RaspberrypiPlatform(PlatformBase):
         # Windows
         "windows_amd64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-w64-mingw32.pioasm-98a542c1.260719.zip",
         "windows_x86": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/i686-w64-mingw32.pioasm-98a542c1.260719.zip",
-        # No Windows ARM64 or ARM32 builds.
+        # No native Windows ARM64 build; alias to the x64 build (runs under
+        # Windows 11 ARM's x64 emulation).
+        "windows_arm64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-w64-mingw32.pioasm-98a542c1.260719.zip",
+        # No Windows ARM32 build.
         # Linux
         "linux_x86_64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-linux-gnu.pioasm-98a542c1.260719.tar.gz",
         "linux_i686": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/i686-linux-gnu.pioasm-98a542c1.260719.tar.gz",
@@ -91,7 +104,10 @@ class RaspberrypiPlatform(PlatformBase):
         # Windows
         "windows_amd64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-w64-mingw32.openocd-acff23ffd.260719.zip",
         "windows_x86": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/i686-w64-mingw32.openocd-acff23ffd.260719.zip",
-        # No Windows ARM64 or ARM32 builds.
+        # No native Windows ARM64 build; alias to the x64 build (runs under
+        # Windows 11 ARM's x64 emulation).
+        "windows_arm64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-w64-mingw32.openocd-acff23ffd.260719.zip",
+        # No Windows ARM32 build.
         # Linux
         "linux_x86_64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-linux-gnu.openocd-acff23ffd.260719.tar.gz",
         "linux_i686": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/i686-linux-gnu.openocd-acff23ffd.260719.tar.gz",
@@ -107,7 +123,10 @@ class RaspberrypiPlatform(PlatformBase):
         # Windows
         "windows_amd64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-w64-mingw32.picotool-6f6458d.260719.zip",
         "windows_x86": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/i686-w64-mingw32.picotool-6f6458d.260719.zip",
-        # No Windows ARM64 or ARM32 builds.
+        # No native Windows ARM64 build; alias to the x64 build (runs under
+        # Windows 11 ARM's x64 emulation).
+        "windows_arm64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-w64-mingw32.picotool-6f6458d.260719.zip",
+        # No Windows ARM32 build.
         # Linux
         "linux_x86_64": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/x86_64-linux-gnu.picotool-6f6458d.260719.tar.gz",
         "linux_i686": "https://github.com/earlephilhower/pico-quick-toolchain/releases/download/5.0.0/i686-linux-gnu.picotool-6f6458d.260719.tar.gz",
