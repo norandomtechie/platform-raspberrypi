@@ -687,6 +687,30 @@ if len(custom_components) > 0:
             if is_riscv:
                 default_common_rp2_components.append((comp, "+<*>"))
                 env.Append(CPPDEFINES=[("PICO_CRT0_NO_ISR_RISCV_MACHINE_EXCEPTION", 1)])
+                # Upstream bug in maxgerhardt/pico-sdk (present as of our pin
+                # 4315984, and still present on that fork's master as of
+                # 2026-09): exception_is_compile_time_default()'s RISC-V
+                # branch compares against the *value* of __unhandled_exception
+                # instead of its *address* (missing '&'), so
+                # exception_set_exclusive_handler() can never recognize an
+                # untouched vector slot and hard_assert()s on first use, for
+                # any caller. Confirmed by disassembly (compiles to a stray
+                # `lbu`, loading one byte of code instead of the symbol's
+                # address) and by diffing against the real upstream
+                # raspberrypi/pico-sdk, which has the '&' and is correct.
+                # Patch the vendored copy in place; idempotent, and a no-op
+                # once/if the pin is updated to a fixed pico-sdk.
+                exception_c = join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_exception", "exception.c")
+                buggy = "(uintptr_t)handler == (uintptr_t)__unhandled_exception;"
+                fixed = "(uintptr_t)handler == (uintptr_t)&__unhandled_exception;"
+                try:
+                    content = Path(exception_c).read_text()
+                    if buggy in content:
+                        print("Patching upstream pico-sdk bug in hardware_exception/exception.c "
+                              "(missing '&' before __unhandled_exception in exception_is_compile_time_default)")
+                        Path(exception_c).write_text(content.replace(buggy, fixed))
+                except Exception as e:
+                    print("Warning: could not check/patch hardware_exception/exception.c: %s" % e)
             else:
                 default_common_rp2_components.append((comp, "-<*> +<exception.c>"))
         else:
