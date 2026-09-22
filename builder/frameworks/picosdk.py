@@ -676,13 +676,21 @@ if len(custom_components) > 0:
         if comp.strip() == "":
             continue
         print(" - %s" % comp)
-        default_common_rp2_components.append((comp, "+<*>"))
-        # hardware_exception's RISC-V exception table is only meant to be linked
-        # when it replaces crt0's own weak default trap handler; the SDK's own
-        # CMakeLists.txt gates this the same way (PICO_RISCV -> define + link
-        # exception_table_riscv.S). See src/rp2_common/hardware_exception/CMakeLists.txt
-        if comp.strip() == "hardware_exception" and is_riscv:
-            env.Append(CPPDEFINES=[("PICO_CRT0_NO_ISR_RISCV_MACHINE_EXCEPTION", 1)])
+        if comp.strip() == "hardware_exception":
+            # exception_table_riscv.S is RISC-V-only assembly (it will not
+            # even parse under arm-none-eabi-gcc); only pull it in - and only
+            # define the flag that suppresses crt0's own weak default trap
+            # handler in its favor - when actually building for RISC-V. The
+            # SDK's own CMakeLists.txt gates this the same way
+            # (PICO_RISCV -> define + link exception_table_riscv.S). See
+            # src/rp2_common/hardware_exception/CMakeLists.txt
+            if is_riscv:
+                default_common_rp2_components.append((comp, "+<*>"))
+                env.Append(CPPDEFINES=[("PICO_CRT0_NO_ISR_RISCV_MACHINE_EXCEPTION", 1)])
+            else:
+                default_common_rp2_components.append((comp, "-<*> +<exception.c>"))
+        else:
+            default_common_rp2_components.append((comp, "+<*>"))
 
 env.BuildSources(
     join("$BUILD_DIR", "PicoSDKPlatform"),
