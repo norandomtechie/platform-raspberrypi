@@ -648,8 +648,41 @@ else:
     )
     env.Append(
         CPPPATH=[
-            join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_rtc", "include"),        
+            join(FRAMEWORK_DIR, "src", "rp2_common", "hardware_rtc", "include"),
     ])
+
+# if more components are specified under "custom_sdk_components"
+# in platformio.ini, add them to default
+import json
+data = json.loads(env.GetProjectConfig().to_json())[0]
+custom_components = [k for k in data[1] if k[0] == "custom_sdk_components"]
+if len(custom_components) == 0:
+    custom_components = []
+else:
+    custom_components = custom_components[0][1]
+if isinstance(custom_components, str):
+    if "\n" in custom_components:
+        # split by new lines
+        custom_components = custom_components.split("\n")
+    elif "," in custom_components:
+        custom_components = [comp.strip() for comp in custom_components.split(",") if comp.strip() != ""]
+    elif " " in custom_components:
+        custom_components = [comp.strip() for comp in custom_components.split(" ") if comp.strip() != ""]
+    else:
+        custom_components = [custom_components.strip()]
+if len(custom_components) > 0:
+    print("Adding Custom Pico SDK Components:")
+    for comp in custom_components:
+        if comp.strip() == "":
+            continue
+        print(" - %s" % comp)
+        default_common_rp2_components.append((comp, "+<*>"))
+        # hardware_exception's RISC-V exception table is only meant to be linked
+        # when it replaces crt0's own weak default trap handler; the SDK's own
+        # CMakeLists.txt gates this the same way (PICO_RISCV -> define + link
+        # exception_table_riscv.S). See src/rp2_common/hardware_exception/CMakeLists.txt
+        if comp.strip() == "hardware_exception" and is_riscv:
+            env.Append(CPPDEFINES=[("PICO_CRT0_NO_ISR_RISCV_MACHINE_EXCEPTION", 1)])
 
 env.BuildSources(
     join("$BUILD_DIR", "PicoSDKPlatform"),
